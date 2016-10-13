@@ -1,6 +1,5 @@
-# docker-alpine-php-laravel
-Imagem para PHP e Laravel com Alpine
+# docker-alpine-php
+Imagem para PHP com Alpine
 
 - PHP 5
-- Laravel 5.3
 - Composer
