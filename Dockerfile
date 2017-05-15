@@ -60,6 +60,10 @@ RUN apk --update add \
 
   #Install Composer
   && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer \
+  
+  #Install PHP Unit
+  && composer global require "phpunit/phpunit" \
+  && ln -s /tmp/vendor/bin/phpunit /usr/local/bin/phpunit \
 
   #Configuring php.ini
   && sed -i "s|;*daemonize\s*=\s*yes|daemonize = no|g" /etc/php/php-fpm.conf && \
