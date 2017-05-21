@@ -5,6 +5,7 @@ ENV PHP_MEMORY_LIMIT    512M
 ENV MAX_UPLOAD          100M
 ENV PHP_MAX_FILE_UPLOAD 100
 ENV PHP_MAX_POST        100M
+ENV XDEBUG_VERSION 2.3.3
 
 WORKDIR /var/www/html
 
@@ -71,6 +72,18 @@ RUN apk --update add \
   sed -i "s|;*max_file_uploads =.*|max_file_uploads = ${PHP_MAX_FILE_UPLOAD}|i" /etc/php/php.ini && \
   sed -i "s|;*post_max_size =.*|post_max_size = ${PHP_MAX_POST}|i" /etc/php/php.ini && \
   sed -i "s|;*cgi.fix_pathinfo=.*|cgi.fix_pathinfo= 0|i" /etc/php/php.ini \
+  
+  #Configuring xdebug
+  && cd /tmp && wget http://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
+  && tar -zxvf xdebug-$XDEBUG_VERSION.tgz \
+  && cd xdebug-$XDEBUG_VERSION && phpize \
+  && ./configure --enable-xdebug && make && make install \
+  && echo "zend_extension=$(find /usr/lib/php/modules/ -name xdebug.so)" > /etc/php/php.ini \
+  && echo "xdebug.remote_enable=on" >> /etc/php/php.ini \
+  && echo "xdebug.remote_handler=dbgp" >> /etc/php/php.ini \
+  && echo "xdebug.remote_connect_back=1" >> /etc/php/php.ini \
+  && echo "xdebug.remote_autostart=on" >> /etc/php/php.ini \
+  && echo "xdebug.remote_port=9004" >> /etc/php/php.ini \
 
   #Delete cache
   && apk del tzdata \
@@ -78,5 +91,6 @@ RUN apk --update add \
   && rm -rf tmp/*
 
   EXPOSE 9000
+  EXPOSE 9004
 
   CMD ["php-fpm"]
